@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 })
 
 export class AppComponent {
-  title = 'Angular: Getting Started';
-  message = 'Hello from the class!';
+  title = 'Acme Product Management';
+  message = 'Acme PMS';
 }
