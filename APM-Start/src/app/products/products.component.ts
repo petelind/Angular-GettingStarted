@@ -92,4 +92,8 @@ export class ProductsComponent implements OnInit {
     filterBy = filterBy.toLocaleLowerCase();
     return this.products.filter((product: IProduct) => product.productName.toLocaleLowerCase().indexOf(filterBy) !== -1);
   }
+
+  onRatingChange($event: number, $product: IProduct) {
+    $product.starRating = $event;
+  }
 }
