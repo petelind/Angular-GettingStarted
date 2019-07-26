@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {IProduct} from './iproduct';
 import {ProductService} from './product.service';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'pm-products',
@@ -8,6 +9,7 @@ import {ProductService} from './product.service';
   styleUrls: ['./products.component.css']
 })
 export class ProductsComponent implements OnInit {
+  private errorMessage: string;
   get listFilter(): string {
     return this._listFilter;
    }
@@ -21,18 +23,23 @@ export class ProductsComponent implements OnInit {
   imageHeight = 50;
   imageMargin = 2;
   showImage = false;
-  products: IProduct[];
-  filteredProducts: IProduct[];
+  products: IProduct[] = [];
+  filteredProducts: IProduct[] = [];
   private _listFilter: string;
-  private _productService: ProductService;
-  constructor(productService: ProductService) {
-    this._productService = productService;
+  constructor(private productService: ProductService, private http: HttpClient) {
+    this.listFilter = '';
   }
 
-  ngOnInit() {
-    this.products = this._productService.getProducts();
-    this.filteredProducts = this.products;
-    this.listFilter = '';
+  ngOnInit(): void {
+    let dataSource = this.productService.getProducts();
+    dataSource.subscribe(
+      products => {
+        this.products = products;
+          this.filteredProducts = this.products;
+      },
+      error => this.errorMessage = error
+    );
+    if (this.errorMessage) { console.log('[ ERROR ]: Products module encountered an error during the init: ' + this.errorMessage); }
   }
 
   toggleImage(): void {
@@ -45,7 +52,6 @@ export class ProductsComponent implements OnInit {
   }
 
   onRatingChange($event: number, $product: IProduct) {
-    this._productService.updateProductRating($product.productId, $event);
-    this.products = this._productService.getProducts();
+    console.log('Rating changed for the ' + $product.productId);
   }
 }
