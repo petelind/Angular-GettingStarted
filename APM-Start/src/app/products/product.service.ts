@@ -1,35 +1,27 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {IProduct} from './iproduct';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {Observable, throwError} from 'rxjs';
-import {catchError, tap} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private productsUrl: string = 'http://localhost:4200/api/products/products.json';
+  private productsUrl: string = '/api/products/products.json';
 
   constructor(private http: HttpClient) {
   }
 
   getProducts(): Observable<IProduct[]> {
-    let dataSource = this.http.get<IProduct[]>(this.productsUrl);
-    return dataSource;
+    return this.http.get<IProduct[]>(this.productsUrl);
   }
 
-  private handleError(err: HttpErrorResponse) {
-    let errorMessage = '';
-    if (err.error instanceof ErrorEvent) {
-      // this is client-side error, inform the client so he can straighten himself up
-      errorMessage = 'You have an error on your side: ' + err.error.message;
-    } else {
-      // that we screwed up, lets at least inform app monitoring service
-      errorMessage = '[ ERROR ] Server returned code: ' + err.status + ', message was: ' + err.statusText + '(' + err.message + ')' ;
-      console.error(errorMessage);
-      // NEVER EVER RE-THROW! thats here just because we dont do anything meaningful!
-      return throwError(errorMessage);
-    }
+  getProduct(id: number): Observable<IProduct> {
+    let productSource: Observable<IProduct>;
+    productSource = this.getProducts().pipe(
+      map((products: IProduct[]) => products.find(p => p.productId === id))
+    );
+    return productSource;
   }
-
 }

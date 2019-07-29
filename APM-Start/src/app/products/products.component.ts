@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {IProduct} from './iproduct';
 import {ProductService} from './product.service';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {throwError} from 'rxjs';
 
 @Component({
   selector: 'pm-products',
@@ -9,7 +10,6 @@ import {HttpClient} from '@angular/common/http';
   styleUrls: ['./products.component.css']
 })
 export class ProductsComponent implements OnInit {
-  private errorMessage: string;
   get listFilter(): string {
     return this._listFilter;
    }
@@ -37,9 +37,9 @@ export class ProductsComponent implements OnInit {
         this.products = products;
           this.filteredProducts = this.products;
       },
-      error => this.errorMessage = error
+      error => this.handleError(error)
     );
-    if (this.errorMessage) { console.log('[ ERROR ]: Products module encountered an error during the init: ' + this.errorMessage); }
+
   }
 
   toggleImage(): void {
@@ -53,5 +53,19 @@ export class ProductsComponent implements OnInit {
 
   onRatingChange($event: number, $product: IProduct) {
     console.log('Rating changed for the ' + $product.productId);
+  }
+
+  private handleError(err: any) {
+    let errorMessage = '';
+    if (err.error instanceof ErrorEvent) {
+      // this is client-side error, inform the client so he can straighten himself up
+      errorMessage = 'You have an error on your side: ' + err.error.message;
+    } else {
+      // that we screwed up, lets at least inform app monitoring service
+      errorMessage = '[ ERROR ] Server returned code: ' + err.status + ', message was: ' + err.statusText + '(' + err.message + ')' ;
+      console.error(errorMessage);
+      // NEVER EVER RE-THROW! thats here just because we dont do anything meaningful!
+      return throwError(errorMessage);
+    }
   }
 }
