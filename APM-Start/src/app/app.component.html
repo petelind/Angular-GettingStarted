@@ -1,5 +1,11 @@
 
-<div class="container container-fluid">
-  <h1 class = "h1 text-center">{{title}}</h1>
-  <pm-products></pm-products>
+<div class="navbar navbar-expand navbar-light bg-light">
+  <a class="navbar-brand">{{title}}</a>
+  <ul class="nav nav-pills">
+    <li><a class="nav-link" [routerLink]="['/welcome']">Home</a> </li>
+    <li><a class="nav-link" [routerLink]="['/products']">Products</a> </li>
+  </ul>
+</div>
+<div class="container-fluid">
+  <router-outlet></router-outlet>
 </div>

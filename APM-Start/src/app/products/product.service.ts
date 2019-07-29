@@ -8,13 +8,13 @@ import {catchError, tap} from 'rxjs/operators';
   providedIn: 'root'
 })
 export class ProductService {
-  private productsUrl: 'http://localhost:4200/api/products/products.json';
+  private productsUrl: string = 'http://localhost:4200/api/products/products.json';
 
   constructor(private http: HttpClient) {
   }
 
   getProducts(): Observable<IProduct[]> {
-    let dataSource = this.http.get<IProduct[]>('http://localhost:4200/api/products/products.json');
+    let dataSource = this.http.get<IProduct[]>(this.productsUrl);
     return dataSource;
   }
 
